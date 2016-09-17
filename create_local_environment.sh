@@ -20,7 +20,7 @@ ln -sf $ABSPATH/WebAPI/Sources/WebAPI $ABSPATH/_Development/Sources
 ln -sf $ABSPATH/RTMAPI/Sources/RTMAPI $ABSPATH/_Development/Sources
 ln -sf $ABSPATH/Bot/Sources/Bot $ABSPATH/_Development/Sources
 ln -sf $ABSPATH/Sugar/Sources/Sugar $ABSPATH/_Development/Sources
-cp -R $ABSPATH/Example/Sources/Example $ABSPATH/_Development/Sources
+cp -R $ABSPATH/Example/Sources/App $ABSPATH/_Development/Sources
 
 cd _Development
 curl -O https://raw.githubusercontent.com/ChameleonBot/Scripts/master/Package.swift
