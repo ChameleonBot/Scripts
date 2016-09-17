@@ -4,7 +4,7 @@ let package = Package(
     name: "Chameleon",
     targets: [
         Target(
-            name: "Example",
+            name: "App",
             dependencies: [
                 .Target(name: "Bot"),
                 .Target(name: "Sugar")
