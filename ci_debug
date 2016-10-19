@@ -31,16 +31,24 @@ then
     echo "🐦 Installing Swift";
     if [[ $OS == "ubuntu1510" ]];
     then
-        SWIFTFILE="swift-3.0-GM-CANDIDATE-ubuntu15.10";    
+        SWIFTFILE="swift-3.0-RELEASE-ubuntu15.10";    
     else
-        SWIFTFILE="swift-3.0-GM-CANDIDATE-ubuntu14.04";
+        SWIFTFILE="swift-3.0-RELEASE-ubuntu14.04";
     fi
-    wget https://swift.org/builds/swift-3.0-GM-CANDIDATE/$OS/swift-3.0-GM-CANDIDATE/$SWIFTFILE.tar.gz
+    wget https://swift.org/builds/swift-3.0-release/$OS/swift-3.0-RELEASE/$SWIFTFILE.tar.gz
     tar -zxf $SWIFTFILE.tar.gz
     export PATH=$PWD/$SWIFTFILE/usr/bin:"${PATH}"
 fi
 
 echo "📅 Version: `swift --version`";
+
+echo "🚀 Building";
+swift build
+if [[ $? != 0 ]]; 
+then 
+    echo "❌  Build failed";
+    exit 1; 
+fi
 
 echo "💼 Building Debug";
 swift build -c debug
@@ -50,13 +58,13 @@ then
     exit 1; 
 fi
 
-# echo "🔎 Testing";
+#echo "🔎 Testing";
 #
-# swift test
-# if [[ $? != 0 ]];
-# then
-#     echo "❌ Tests failed";
-#     exit 1;
-# fi
+#swift test
+#if [[ $? != 0 ]]; 
+#then 
+#    echo "❌ Tests failed";
+#    exit 1; 
+#fi
 
-echo "✅ Done";
+echo "✅ Done"
