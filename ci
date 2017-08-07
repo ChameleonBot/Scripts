@@ -4,67 +4,81 @@ echo "Swift 3 Continuous Integration";
 
 # Determine OS
 UNAME=`uname`;
-if [[ $UNAME == "Darwin" ]];
-then
+if [[ $UNAME == "Darwin" ]]; then
     OS="macos";
 else
-    if [[ $UNAME == "Linux" ]];
-    then
+    if [[ $UNAME == "Linux" ]]; then
         UBUNTU_RELEASE=`lsb_release -a 2>/dev/null`;
-        if [[ $UBUNTU_RELEASE == *"15.10"* ]];
-        then
-            OS="ubuntu1510";
-        else
+        if [[ $UBUNTU_RELEASE == *"16.10"* ]]; then
+            OS="ubuntu1610";
+        elif [[ $UBUNTU_RELEASE == *"16.04"* ]]; then
+            OS="ubuntu1604";
+        elif [[ $UBUNTU_RELEASE == *"14.04"* ]]; then
             OS="ubuntu1404";
+        else
+            echo "❌ Unsupported Operating System: $UNAME";
+            exit 1
         fi
     else
-        echo "Unsupported Operating System: $UNAME";
+        echo "❌ Unsupported Operating System: $UNAME";
+        exit 1
     fi
 fi
 echo "🖥 Operating System: $OS";
 
-if [[ $OS != "macos" ]];
-then
+if [[ $OS != "macos" ]]; then
     echo "📚 Installing Dependencies"
     sudo apt-get install -y clang libicu-dev uuid-dev
 
     echo "🐦 Installing Swift";
-    if [[ $OS == "ubuntu1510" ]];
-    then
-        SWIFTFILE="swift-3.0-RELEASE-ubuntu15.10";    
+    if [[ $OS == "ubuntu1610" ]]; then
+        SWIFTFILE="swift-3.1.1-RELEASE-ubuntu16.10";
+    elif [[ $OS == "ubuntu1604" ]]; then
+        SWIFTFILE="swift-3.1.1-RELEASE-ubuntu16.04";
+    elif [[ $OS == "ubuntu1404" ]]; then
+        SWIFTFILE="swift-3.1.1-RELEASE-ubuntu14.04";
     else
-        SWIFTFILE="swift-3.0-RELEASE-ubuntu14.04";
+        echo "❌ Unsupported Operating System: $UNAME";
+        exit 1;
     fi
-    wget https://swift.org/builds/swift-3.0-release/$OS/swift-3.0-RELEASE/$SWIFTFILE.tar.gz
+
+    wget https://swift.org/builds/swift-3.1.1-release/$OS/swift-3.1.1-RELEASE/$SWIFTFILE.tar.gz
     tar -zxf $SWIFTFILE.tar.gz
     export PATH=$PWD/$SWIFTFILE/usr/bin:"${PATH}"
+else
+    # Install OS X system level dependencies
+    brew tap vapor/homebrew-tap > /dev/null
+    brew update > /dev/null
+    brew install ctls > /dev/null
+
+    export SWIFT_VERSION=swift-3.1.1-RELEASE
+    curl -O https://swift.org/builds/swift-3.1.1-release/xcode/${SWIFT_VERSION}/${SWIFT_VERSION}-osx.pkg
+    sudo installer -pkg ${SWIFT_VERSION}-osx.pkg -target /
+    export TOOLCHAINS=swift
 fi
 
 echo "📅 Version: `swift --version`";
 
 echo "🚀 Building";
 swift build
-if [[ $? != 0 ]]; 
-then 
-    echo "❌  Build failed";
+if [[ $? != 0 ]]; then
+    echo "❌ Build failed";
     exit 1; 
 fi
 
 echo "💼 Building Release";
 swift build -c release
-if [[ $? != 0 ]]; 
-then 
-    echo "❌  Build for release failed";
+if [[ $? != 0 ]];  then
+    echo "❌ Build for release failed";
     exit 1; 
 fi
 
 #echo "🔎 Testing";
-#
-#swift test
-#if [[ $? != 0 ]]; 
-#then 
-#    echo "❌ Tests failed";
-#    exit 1; 
-#fi
+
+swift test
+if [[ $? != 0 ]]; then
+    echo "❌ Tests failed";
+    exit 1;
+fi
 
 echo "✅ Done"
