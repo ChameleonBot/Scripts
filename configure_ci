@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+UNAME=`uname`;
+if [[ $UNAME == "Darwin" ]]; then
+    OS="macos";
+fi
+echo "🖥 Operating System: $OS";
+
+echo "📚 Installing Dependencies"
+if [[ $OS != "macos" ]]; then
+    sudo apt-get install -y clang libicu-dev uuid-dev
+else
+    # Install OS X system level dependencies
+    brew tap vapor/homebrew-tap > /dev/null
+    brew update > /dev/null
+    brew install ctls > /dev/null
+fi
